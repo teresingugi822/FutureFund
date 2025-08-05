@@ -1,0 +1,106 @@
+/* Custom styles for FutureFund */
+
+.balance-display {
+    padding: 1rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--bs-info) 0%, var(--bs-primary) 100%);
+}
+
+.balance-positive {
+    color: var(--bs-success) !important;
+}
+
+.balance-negative {
+    color: var(--bs-danger) !important;
+}
+
+.transaction-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.transaction-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+}
+
+.transaction-income {
+    border-left-color: var(--bs-success);
+}
+
+.transaction-expense {
+    border-left-color: var(--bs-danger);
+}
+
+.transaction-amount-income {
+    color: var(--bs-success);
+}
+
+.transaction-amount-expense {
+    color: var(--bs-danger);
+}
+
+.btn-delete {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.transaction-item:hover .btn-delete {
+    opacity: 1;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--bs-info);
+    box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25);
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.loading-overlay {
+    position: relative;
+}
+
+.loading-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .balance-display {
+        font-size: 2rem;
+    }
+    
+    .transaction-item .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .transaction-item .btn-delete {
+        margin-top: 0.5rem;
+        align-self: flex-end;
+    }
+}
