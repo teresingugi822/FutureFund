@@ -3,3 +3,6 @@ Flask-Cors
 Flask-SQLAlchemy
 requests
 gunicorn
+Flask-Mail
+email-validator
+itsdangerous

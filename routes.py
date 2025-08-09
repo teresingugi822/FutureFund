@@ -1,8 +1,77 @@
-from flask import render_template, request, jsonify, url_for
+
+from flask import render_template, request, jsonify, url_for, session
 from app import app, db
-from models import Transaction, MpesaPayment
+from models import Transaction, MpesaPayment, User
 from mpesa_service import mpesa_api
 import logging
+from flask_mail import Mail, Message
+from email_validator import validate_email, EmailNotValidError
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+import os
+
+# Mail setup
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Change to your mail server
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+mail = Mail(app)
+serializer = URLSafeTimedSerializer(app.secret_key)
+
+# --- User Authentication Routes ---
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    email = data.get('email', '').strip().lower()
+    password = data.get('password', '')
+    try:
+        validate_email(email)
+    except EmailNotValidError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+    if not password or len(password) < 6:
+        return jsonify({'success': False, 'error': 'Password must be at least 6 characters.'}), 400
+    if User.query.filter_by(email=email).first():
+        return jsonify({'success': False, 'error': 'Email already registered.'}), 400
+    user = User(email=email)
+    user.set_password(password)
+    db.session.add(user)
+    db.session.commit()
+    # Send verification email
+    token = serializer.dumps(email, salt='email-confirm')
+    link = url_for('verify_email', token=token, _external=True)
+    try:
+        msg = Message('Verify your email', sender=app.config['MAIL_USERNAME'], recipients=[email])
+        msg.body = f'Click the link to verify your email: {link}'
+        mail.send(msg)
+    except Exception as e:
+        logging.error(f"Error sending email: {str(e)}")
+    return jsonify({'success': True, 'message': 'Signup successful! Please check your email to verify your account.'})
+
+@app.route('/api/verify/<token>', methods=['GET'])
+def verify_email(token):
+    try:
+        email = serializer.loads(token, salt='email-confirm', max_age=3600)
+    except SignatureExpired:
+        return 'The verification link has expired.', 400
+    except BadSignature:
+        return 'Invalid verification link.', 400
+    user = User.query.filter_by(email=email).first_or_404()
+    user.is_verified = True
+    db.session.commit()
+    return 'Email verified! You can now log in.'
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email', '').strip().lower()
+    password = data.get('password', '')
+    user = User.query.filter_by(email=email).first()
+    if not user or not user.check_password(password):
+        return jsonify({'success': False, 'error': 'Invalid email or password.'}), 401
+    if not user.is_verified:
+        return jsonify({'success': False, 'error': 'Email not verified. Please check your inbox.'}), 403
+    session['user_id'] = user.id
+    return jsonify({'success': True, 'message': 'Login successful.'})
 
 @app.route('/')
 def index():
