@@ -7,9 +7,99 @@
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #155e30 0%, #a8e063 100%);
+            min-height: 100vh;
+        }
+        .auth-overlay {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(21,94,48,0.2);
+            border: 2px solid #a8e063;
+        }
+        .card, .card-header, .card-body {
+            border-radius: 1rem !important;
+        }
+        .btn-primary, .btn-success, .btn-outline-primary, .btn-outline-success {
+            background: linear-gradient(90deg, #155e30 0%, #a8e063 100%);
+            border: none;
+            color: #fff !important;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(21,94,48,0.2);
+        }
+        .btn-outline-primary, .btn-outline-success {
+            background: #ffd700 !important;
+            color: #155e30 !important;
+            border: 2px solid #155e30 !important;
+        }
+        .btn-primary:hover, .btn-success:hover, .btn-outline-primary:hover, .btn-outline-success:hover {
+            background: linear-gradient(90deg, #a8e063 0%, #155e30 100%) !important;
+            color: #fff !important;
+        }
+        .display-4, .fw-bold, .balance-display {
+            color: #ffd700 !important;
+            text-shadow: 1px 1px 8px #155e30;
+        }
+        .card-title, .form-label, .text-success, .text-danger {
+            color: #155e30 !important;
+        }
+        .card {
+            border: 2px solid #ffd700;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #a8e063 !important;
+            color: #155e30 !important;
+            border-color: #ffd700 #ffd700 #fff;
+        }
+        .nav-tabs .nav-link {
+            color: #155e30 !important;
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
+        <!-- Authentication Forms with Toggle Buttons -->
+        <div class="row mb-4">
+            <div class="col-md-6 mx-auto">
+                <div class="d-flex justify-content-center mb-3">
+                    <button id="show-signup" class="btn btn-outline-primary me-2" type="button">Sign Up</button>
+                    <button id="show-login" class="btn btn-outline-success" type="button">Login</button>
+                </div>
+                <div id="signup-card" class="card mb-3 auth-overlay" style="display:none;">
+                    <div class="card-header">Sign Up</div>
+                    <div class="card-body">
+                        <form id="signup-form">
+                            <div class="mb-3">
+                                <label for="signup-email" class="form-label">Email address</label>
+                                <input type="email" class="form-control" id="signup-email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="signup-password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="signup-password" name="password" required minlength="6">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                        </form>
+                    </div>
+                </div>
+                <div id="login-card" class="card auth-overlay" style="display:none;">
+                    <div class="card-header">Login</div>
+                    <div class="card-body">
+                        <form id="login-form">
+                            <div class="mb-3">
+                                <label for="login-email" class="form-label">Email address</label>
+                                <input type="email" class="form-control" id="login-email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="login-password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="login-password" name="password" required minlength="6">
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Header -->
         <header class="py-4 mb-4 border-bottom">
             <div class="container">
@@ -21,7 +111,52 @@
             </div>
         </header>
 
-        <div class="container">
+        <!-- App Importance Info Section -->
+        <section class="mb-4">
+            <div class="container">
+                <div class="card shadow-lg border-info" style="background:rgba(255,255,255,0.97);">
+                    <div class="card-body">
+                        <h2 class="card-title text-success mb-3"><i class="fas fa-lightbulb me-2"></i>Welcome to FutureFund!</h2>
+                        <p class="lead mb-3">Your personal finance tracker for smarter money management, security, and peace of mind.</p>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div style="background: linear-gradient(90deg, #ffd700 0%, #a8e063 100%); border-radius: 1rem; padding: 1rem; box-shadow: 0 2px 8px rgba(21,94,48,0.12);">
+                                    <h4 class="mb-3" style="color:#155e30; font-size:1.5rem; font-weight:bold;"><i class="fas fa-star me-2"></i>Key Features</h4>
+                                    <ul class="mb-2" style="font-size:1.15rem; color:#155e30; font-weight:500;">
+                                        <li><strong>Track Income & Expenses:</strong> Log transactions and monitor your financial health.</li>
+                                        <li><strong>Set Savings Goals:</strong> Stay motivated and reach your targets.</li>
+                                        <li><strong>M-Pesa Integration:</strong> Add payments directly from your phone.</li>
+                                        <li><strong>Instant Insights:</strong> View your balance, income, and expenses at a glance.</li>
+                                        <li><strong>Delete & Edit Transactions:</strong> Keep your records accurate and up-to-date.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div style="background: linear-gradient(90deg, #ffd700 0%, #a8e063 100%); border-radius: 1rem; padding: 1rem; box-shadow: 0 2px 8px rgba(21,94,48,0.12);">
+                                    <h4 class="mb-3" style="color:#155e30; font-size:1.5rem; font-weight:bold;"><i class="fas fa-user-shield me-2"></i>Privacy & Security</h4>
+                                    <ul class="mb-2" style="font-size:1.15rem; color:#155e30; font-weight:500;">
+                                        <li><strong>Secure Login:</strong> Only you can access your data after signing in.</li>
+                                        <li><strong>Data Protection:</strong> Your information is encrypted and never shared.</li>
+                                        <li><strong>Email Verification:</strong> Extra layer of security for your account.</li>
+                                    </ul>
+                                    <h4 class="mt-4 mb-3" style="color:#155e30; font-size:1.5rem; font-weight:bold;"><i class="fas fa-question-circle me-2"></i>Help Centre</h4>
+                                    <ul style="font-size:1.15rem; color:#155e30; font-weight:500;">
+                                        <li><strong>Need assistance?</strong> Visit our <a href="#" class="text-success" style="font-weight:bold;">Help Centre</a> for FAQs, guides, and support.</li>
+                                        <li><strong>Contact Us:</strong> Email <a href="mailto:support@futurefund.com" class="text-success" style="font-weight:bold;">support@futurefund.com</a> for help.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-success mt-3 mb-0">
+                            <i class="fas fa-lock me-2"></i>
+                            <strong>Your privacy and financial security are our top priorities.</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container" id="transaction-section" style="display:none;">
             <!-- Balance Display -->
             <div class="row mb-4">
                 <div class="col-12">

@@ -68,8 +68,7 @@ def login():
     user = User.query.filter_by(email=email).first()
     if not user or not user.check_password(password):
         return jsonify({'success': False, 'error': 'Invalid email or password.'}), 401
-    if not user.is_verified:
-        return jsonify({'success': False, 'error': 'Email not verified. Please check your inbox.'}), 403
+    # Email verification removed: allow login immediately after signup
     session['user_id'] = user.id
     return jsonify({'success': True, 'message': 'Login successful.'})
 

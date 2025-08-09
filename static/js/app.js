@@ -10,10 +10,39 @@ class FinanceTracker {
     }
     
     async initializeApp() {
+        this.isLoggedIn = false;
         this.bindEventListeners();
-        await this.loadTransactions();
-        await this.updateBalance();
-        await this.checkMpesaStatus();
+        this.setupAuthToggle();
+        this.updateUIForAuth();
+    }
+
+    updateUIForAuth() {
+        const transactionSection = document.getElementById('transaction-section');
+        if (!this.isLoggedIn) {
+            if (transactionSection) transactionSection.style.display = 'none';
+        } else {
+            if (transactionSection) transactionSection.style.display = '';
+        }
+    }
+
+    setupAuthToggle() {
+        const showSignupBtn = document.getElementById('show-signup');
+        const showLoginBtn = document.getElementById('show-login');
+        const signupCard = document.getElementById('signup-card');
+        const loginCard = document.getElementById('login-card');
+        if (showSignupBtn && showLoginBtn && signupCard && loginCard) {
+            // Hide both by default
+            signupCard.style.display = 'none';
+            loginCard.style.display = 'none';
+            showSignupBtn.addEventListener('click', () => {
+                signupCard.style.display = '';
+                loginCard.style.display = 'none';
+            });
+            showLoginBtn.addEventListener('click', () => {
+                signupCard.style.display = 'none';
+                loginCard.style.display = '';
+            });
+        }
     }
     
     bindEventListeners() {
@@ -43,8 +72,70 @@ class FinanceTracker {
         if (mpesaAmountInput) {
             mpesaAmountInput.addEventListener('input', this.validateMpesaAmount);
         }
+        
+        // Signup form listener
+        const signupForm = document.getElementById('signup-form');
+        if (signupForm) {
+            signupForm.addEventListener('submit', (e) => this.handleSignup(e));
+        }
+        
+        // Login form listener
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        }
     }
     
+    async handleSignup(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const email = formData.get('email').trim();
+        const password = formData.get('password');
+        try {
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const result = await response.json();
+            if (result.success) {
+                this.showAlert(result.message, 'success');
+                e.target.reset();
+            } else {
+                this.showAlert(result.error || 'Signup failed', 'danger');
+            }
+        } catch (error) {
+            this.showAlert('Network error. Please try again.', 'danger');
+        }
+    }
+    
+    async handleLogin(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const email = formData.get('email').trim();
+        const password = formData.get('password');
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const result = await response.json();
+            if (result.success) {
+                this.showAlert(result.message, 'success');
+                e.target.reset();
+                this.isLoggedIn = true;
+                this.updateUIForAuth();
+                await this.loadTransactions();
+                await this.updateBalance();
+                await this.checkMpesaStatus();
+            } else {
+                this.showAlert(result.error || 'Login failed', 'danger');
+            }
+        } catch (error) {
+            this.showAlert('Network error. Please try again.', 'danger');
+        }
+    }
     validateAmount(e) {
         const amount = parseFloat(e.target.value);
         const isValid = amount > 0;
