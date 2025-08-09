@@ -60,38 +60,120 @@
                             </h3>
                         </div>
                         <div class="card-body">
-                            <form id="transaction-form">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label for="description" class="form-label">Description</label>
-                                        <input type="text" class="form-control" id="description" name="description" 
-                                               placeholder="Enter transaction description" required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="amount" class="form-label">Amount</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" class="form-control" id="amount" name="amount" 
-                                                   step="0.01" min="0.01" placeholder="0.00" required>
+                            <!-- Tab Navigation -->
+                            <ul class="nav nav-tabs mb-3" id="transactionTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" 
+                                            type="button" role="tab" aria-controls="manual" aria-selected="true">
+                                        <i class="fas fa-edit me-2"></i>Manual Entry
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="mpesa-tab" data-bs-toggle="tab" data-bs-target="#mpesa" 
+                                            type="button" role="tab" aria-controls="mpesa" aria-selected="false">
+                                        <i class="fas fa-mobile-alt me-2"></i>M-Pesa Payment
+                                    </button>
+                                </li>
+                            </ul>
+                            
+                            <!-- Tab Content -->
+                            <div class="tab-content" id="transactionTabContent">
+                                <!-- Manual Transaction Tab -->
+                                <div class="tab-pane fade show active" id="manual" role="tabpanel" aria-labelledby="manual-tab">
+                                    <form id="transaction-form">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="description" class="form-label">Description</label>
+                                                <input type="text" class="form-control" id="description" name="description" 
+                                                       placeholder="Enter transaction description" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="amount" class="form-label">Amount</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">KSh</span>
+                                                    <input type="number" class="form-control" id="amount" name="amount" 
+                                                           step="0.01" min="0.01" placeholder="0.00" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="transaction_type" class="form-label">Type</label>
+                                                <select class="form-select" id="transaction_type" name="transaction_type" required>
+                                                    <option value="">Select type</option>
+                                                    <option value="income">Income</option>
+                                                    <option value="expense">Expense</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-primary" id="submit-btn">
+                                                    <i class="fas fa-plus me-2"></i>Add Transaction
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                                <!-- M-Pesa Payment Tab -->
+                                <div class="tab-pane fade" id="mpesa" role="tabpanel" aria-labelledby="mpesa-tab">
+                                    <div id="mpesa-status-container">
+                                        <div class="text-center py-3">
+                                            <div class="spinner-border text-info" role="status">
+                                                <span class="visually-hidden">Checking M-Pesa status...</span>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <label for="transaction_type" class="form-label">Type</label>
-                                        <select class="form-select" id="transaction_type" name="transaction_type" required>
-                                            <option value="">Select type</option>
-                                            <option value="income">Income</option>
-                                            <option value="expense">Expense</option>
-                                        </select>
+                                    
+                                    <form id="mpesa-form" style="display: none;">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            <strong>M-Pesa Payment:</strong> You will receive a prompt on your phone to complete the payment.
+                                        </div>
+                                        
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="mpesa-phone" class="form-label">Phone Number</label>
+                                                <input type="tel" class="form-control" id="mpesa-phone" name="phone_number" 
+                                                       placeholder="254700000000" required>
+                                                <div class="form-text">Format: 254XXXXXXXXX</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="mpesa-amount" class="form-label">Amount</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">KSh</span>
+                                                    <input type="number" class="form-control" id="mpesa-amount" name="amount" 
+                                                           step="1" min="1" placeholder="100" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-3 mt-2">
+                                            <div class="col-12">
+                                                <label for="mpesa-description" class="form-label">Description</label>
+                                                <input type="text" class="form-control" id="mpesa-description" name="description" 
+                                                       placeholder="Top up account" required>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-success" id="mpesa-submit-btn">
+                                                    <i class="fas fa-mobile-alt me-2"></i>Send M-Pesa Request
+                                                </button>
+                                                <div class="form-text mt-2">
+                                                    <i class="fas fa-shield-alt me-1"></i>
+                                                    Secure payment powered by Safaricom M-Pesa
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    
+                                    <div id="mpesa-not-configured" style="display: none;">
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <strong>M-Pesa Not Available:</strong> M-Pesa integration is not configured. Please contact the administrator.
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row mt-3">
-                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary" id="submit-btn">
-                                            <i class="fas fa-plus me-2"></i>Add Transaction
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
